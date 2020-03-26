@@ -2,7 +2,7 @@
     "subname":"MTC Dublin Azure - Azure Stack",
     "location":"North Europe",
     "resourcegroupname":"SocialListening",
-    "sqlservername":"sqlserver",
+    "sqlservername":"sqlserver-socialanalytics",
     "sqldbname":"sqldb",
     "bing_maps_key":"AknYXCT7txNQ8D-jR1ukLqB9yl17GASbs_aQgDOFHrIvHr-qQEyMPjY_YlqU1WSz",
     "twitter_search_term":"covid-19",

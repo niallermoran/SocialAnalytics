@@ -23,8 +23,6 @@ $text_analytics_domain = $VariablesJsonObject.text_analytics_domain  ## this nee
 $text_analytics_name = $VariablesJsonObject.text_analytics_name
 
 
-Exit 
-
 ## for error tracking
 $ErrorActionPreference = "SilentlyContinue" # change to SilentlyContinue once completed
 
@@ -58,8 +56,6 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     }
     else
     {
-        ##$userg = Read-Host "The resource group $resourcegroupname already exists. Do you want to use it?" 
-     
         Write-Host "The resource group $resourcegroupname already exists. Do you want to use it? (Default is No)" -ForegroundColor Yellow 
         $Readhost = Read-Host " ( y / n ) " 
         Switch ($ReadHost) 
