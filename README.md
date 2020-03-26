@@ -53,9 +53,13 @@ Now that everything is setup, our Logic Apps, should now work correctly, but the
 - To test everything is working query the sql database by reviewing the results of each of the views: viewLocation, viewTweets and view Phrases
 - Within viewLocations you should start to see records with BingLocation populated. This won't be the case for all records as users can add whatever location they want in twitter.
 - After some time check the run history of both logic apps to ensure they are performing correctly.
-### Common Issues
-- When running the twitter logic app if you get an error at the search tweets step, just click in and click 'change connection' then select the twitter connection and rerun
+
+### Setup the PowerBI Desktop report
+- Open the pbix file located under the Reports folder
 - second
 - third
+
+### Common Issues
+- When running the twitter logic app if you get an error at the search tweets step, just click in and click 'change connection' then select the twitter connection and rerun
 
   
