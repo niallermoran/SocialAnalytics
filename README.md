@@ -55,9 +55,15 @@ Now that everything is setup, our Logic Apps, should now work correctly, but the
 - After some time check the run history of both logic apps to ensure they are performing correctly.
 
 ### Setup the PowerBI Desktop report
-- Open the pbix file located under the Reports folder
-- second
-- third
+- Open the pbix file located under the Reports folder and save into a local folder somewhere. 
+- If you are asked to authenticate just click cancel and close the error dialog that follows.
+- Click on the 'Edit Queries' button to enter the power query editor.
+- Hit the 'Data source settings' button, then click change source and enter the full sql database server name.
+- Make sure your client IP address has been added to the firewall settings of the sql database using the Azure portal
+- Then click 'Edit Permissions' on the data source settings dialog and update the sql connection details.
+- Click 'OK' and 'Close' and the 'Refresh Preview'
+- Assuming this all works click 'Close and Apply'
+- On the main PowerBI dialog click Refresh
 
 ### Common Issues
 - When running the twitter logic app if you get an error at the search tweets step, just click in and click 'change connection' then select the twitter connection and rerun
