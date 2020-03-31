@@ -26,7 +26,7 @@ $text_analytics_name = $VariablesJsonObject.text_analytics_name
 ## for error tracking
 $ErrorActionPreference = "SilentlyContinue" # change to SilentlyContinue once completed
 
-
+ 
 ## dynamic variables
 
 $connections_sql_name = "sql"
@@ -154,27 +154,111 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
 ##end
 
-## create the logic apps
-    $templateFileLogic = "$scriptDir\ARM\CreateLogicApps\template.json"
+
+## create the bing logic apps
+    $templateFileLogic = "$scriptDir\ARM\CreateLogicApps\template_binglocations.json"
 
     ## create the correct parameter object to pass when creating the resources
     $paramObjectLogicApps = @{
         'workflows_bing_locations_logic_app_name' = 'bing_locations_logic_app'
-        'workflows_twitter_logic_app_name'  = 'twitter_logic_app'
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
-        'connections_cognitiveservicestextanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
-        'connections_twitter_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
         'bing_api_key' = $bing_maps_key
-        'twitter-search-term' = $twitter_search_term
     }
 
     ## create the logic apps
-    echo "Creating the Logic apps"        
-    New-AzResourceGroupDeployment -Name logicappstemplate -ResourceGroupName $resourcegroupname -TemplateFile $templateFileLogic -TemplateParameterObject $paramObjectLogicApps -ErrorVariable failed -ErrorAction $ErrorActionPreference
+    echo "Creating the Bing Location search Logic app"        
+    New-AzResourceGroupDeployment -Name binglogicappstemplate -ResourceGroupName $resourcegroupname -TemplateFile $templateFileLogic -TemplateParameterObject $paramObjectLogicApps -ErrorVariable failed -ErrorAction $ErrorActionPreference
 
     if( $failed )
     {
-        echo "There was a problem creating the logic apps!" 
+        echo "There was a problem creating the logic app!" 
+        Cleanup
+    }
+    else
+    {
+        echo "Logic apps created"        
+    }
+
+    echo "Finished Everything!"  
+
+##end
+
+## create the phrase extraction logic apps
+     $templateFileLogic = "$scriptDir\ARM\CreateLogicApps\template_phraseextraction.json"
+
+    ## create the correct parameter object to pass when creating the resources
+    $paramObjectLogicApps = @{
+        'workflows_extract_phrase_logicapp_name' = 'phrase_extraction_logic_app'
+        'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
+        'connections_textanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
+    }
+
+    ## create the logic apps
+    echo "Creating the Phrase Extraction Logic apps"        
+    New-AzResourceGroupDeployment -Name phraselogicappstemplate -ResourceGroupName $resourcegroupname -TemplateFile $templateFileLogic -TemplateParameterObject $paramObjectLogicApps -ErrorVariable failed -ErrorAction $ErrorActionPreference
+
+    if( $failed )
+    {
+        echo "There was a problem creating the phrase extraction logic apps!" 
+        Cleanup
+    }
+    else
+    {
+        echo "Logic apps created"        
+    }
+
+    echo "Finished Everything!"  
+
+##end
+
+## create the sentiment logic app
+      $templateFileLogic = "$scriptDir\ARM\CreateLogicApps\template_sentiment.json"
+
+    ## create the correct parameter object to pass when creating the resources
+    $paramObjectLogicApps = @{
+        'workflows_sentiment_logic_app_name' = 'sentiment_logic_app'
+        'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
+        'connections_textanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
+    }
+
+
+    ## create the logic app
+    echo "Creating the sentiment analysis Logic apps"        
+    New-AzResourceGroupDeployment -Name sentimentlogicappstemplate -ResourceGroupName $resourcegroupname -TemplateFile $templateFileLogic -TemplateParameterObject $paramObjectLogicApps -ErrorVariable failed -ErrorAction $ErrorActionPreference
+
+    if( $failed )
+    {
+        echo "There was a problem creating the sentiment logic app!" 
+        Cleanup
+    }
+    else
+    {
+        echo "Logic apps created"        
+    }
+
+    echo "Finished Everything!"  
+
+##end
+
+## create the twitter seacrh logic app
+    $templateFileLogic = "$scriptDir\ARM\CreateLogicApps\template_twitter.json"
+
+    ## create the correct parameter object to pass when creating the resources
+    $paramObjectLogicApps = @{
+        'workflows_twitter_logic_app_name' = 'twitter_seach_logicapp'
+        'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
+        'connections_twitter_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_twitter_name
+        'twitter_search_term' = "covid-19 ireland"
+    }
+
+    ## create the logic apps
+    echo "Creating the Twitter search Logic apps"        
+    New-AzResourceGroupDeployment -Name logicappstemplate -ResourceGroupName $resourcegroupname -TemplateFile $templateFileLogic -TemplateParameterObject $paramObjectLogicApps -ErrorVariable failed -ErrorAction $ErrorActionPreference
+
+
+    if( $failed )
+    {
+        echo "There was a problem creating the twitter seach logic app!" 
         Cleanup
     }
     else

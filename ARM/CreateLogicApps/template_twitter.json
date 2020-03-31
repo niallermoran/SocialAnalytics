@@ -1,0 +1,523 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workflows_twitter_logic_app_name": {
+      "defaultValue": "twitter_logic_app",
+      "type": "String"
+    },
+    "connections_sql_externalid": {
+      "defaultValue": "needs to be replaced",
+      "type": "String"
+    },
+    "connections_twitter_externalid": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "twitter_search_term": {
+      "defaultValue": "Ireland",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2017-07-01",
+      "name": "twitter_logic_app",
+      "location": "northeurope",
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            },
+            "twitter-search-term": {
+              "defaultValue": "[parameters('twitter_search_term')]",
+              "type": "String"
+            }
+          },
+          "triggers": {
+            "Recurrence": {
+              "recurrence": {
+                "frequency": "Minute",
+                "interval": 2
+              },
+              "type": "Recurrence"
+            }
+          },
+          "actions": {
+            "Create_JSON_from_Result": {
+              "runAfter": {
+                "For_each": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Compose",
+              "inputs": "@result('For_Each')"
+            },
+            "Create_a_new_Run_Record": {
+              "runAfter": {
+                "Sets_the_last_TweetID_for_searching_later": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "DateFinished": "@{utcNow()}",
+                  "DateStarted": "@{utcNow()}",
+                  "ID": "@variables('RunID')",
+                  "NumberofTweets": 0,
+                  "NumberofUniqueTweets": 0
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('Runs'))}/items"
+              }
+            },
+            "Create_a_variable_for_a_Unique_ID_for_a_Run_Record": {
+              "runAfter": {},
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "RunID",
+                    "type": "string",
+                    "value": "@{guid()}"
+                  }
+                ]
+              }
+            },
+            "Create_a_variable_to_count_tweets": {
+              "runAfter": {
+                "Create_a_variable_for_a_Unique_ID_for_a_Run_Record": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "TweetCount",
+                    "type": "integer",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "Create_a_variable_to_count_unique_tweets": {
+              "runAfter": {
+                "Create_a_variable_to_count_tweets": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "UniqueTweetCount",
+                    "type": "integer",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "Create_a_variable_to_store_a_tweet_as_JSON": {
+              "runAfter": {
+                "Create_a_variable_to_count_unique_tweets": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "TweetJSON",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "For_each": {
+              "foreach": "@body('Search_tweets')",
+              "actions": {
+                "Create_JSON_Object": {
+                  "runAfter": {
+                    "If_This_is_a_Retweet": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "ParseJson",
+                  "inputs": {
+                    "content": "@variables('TweetJSON')",
+                    "schema": {
+                      "properties": {
+                        "CreatedAt": {
+                          "type": "string"
+                        },
+                        "RetweetCount": {
+                          "type": "string"
+                        },
+                        "TweetId": {
+                          "type": "string"
+                        },
+                        "TweetLanguageCode": {
+                          "type": "string"
+                        },
+                        "TweetText": {
+                          "type": "string"
+                        },
+                        "TweetedBy": {
+                          "type": "string"
+                        },
+                        "UserDetails": {
+                          "properties": {
+                            "FullName": {
+                              "type": "string"
+                            },
+                            "Id": {
+                              "type": "string"
+                            },
+                            "Location": {
+                              "type": "string"
+                            },
+                            "UserName": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  }
+                },
+                "Create_Location": {
+                  "runAfter": {
+                    "Update_unique_tweet_if_a_new_row_was_created": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "body": {
+                      "location": "@body('Create_JSON_Object')?['UserDetails']?['Location']"
+                    },
+                    "host": {
+                      "connection": {
+                        "name": "@parameters('$connections')['sql']['connectionId']"
+                      }
+                    },
+                    "method": "post",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[CreateNewLocation]'))}"
+                  }
+                },
+                "Create_a_Tweet_Row_if_the_tweet_has_not_already_been_stored": {
+                  "runAfter": {
+                    "Increment_variable": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "body": {
+                      "body": "@body('Create_JSON_Object')?['TweetText']",
+                      "createdat": "@body('Create_JSON_Object')?['CreatedAt']",
+                      "languagecode": "@body('Create_JSON_Object')?['TweetLanguageCode']",
+                      "location": "@body('Create_JSON_Object')?['UserDetails']?['Location']",
+                      "retweetcount": "@{body('Create_JSON_Object')?['RetweetCount']}",
+                      "runid": "@variables('RunID')",
+                      "sentiment": "0",
+                      "tweetedby": "@body('Create_JSON_Object')?['TweetedBy']",
+                      "twitterid": "@body('Create_JSON_Object')?['TweetId']",
+                      "twitteruserid": "@{body('Create_JSON_Object')?['UserDetails']?['Id']}"
+                    },
+                    "host": {
+                      "connection": {
+                        "name": "@parameters('$connections')['sql']['connectionId']"
+                      }
+                    },
+                    "method": "post",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[CreateTweet]'))}"
+                  }
+                },
+                "If_This_is_a_Retweet": {
+                  "actions": {
+                    "Create_JSON_Using_Original_Tweet": {
+                      "runAfter": {},
+                      "type": "Compose",
+                      "inputs": {
+                        "CreatedAt": "@{items('For_each')?['OriginalTweet']?['CreatedAtIso']}",
+                        "RetweetCount": " @{items('For_each')?['OriginalTweet']?['RetweetCount']}",
+                        "TweetId": "@{items('For_each')?['OriginalTweet']?['TweetId']}",
+                        "TweetLanguageCode": "@{items('For_each')?['OriginalTweet']?['TweetLanguageCode']}",
+                        "TweetText": "@{items('For_each')?['OriginalTweet']?['TweetText']}",
+                        "TweetedBy": "@{items('For_each')?['OriginalTweet']?['TweetedBy']}",
+                        "UserDetails": {
+                          "FullName": "@{items('For_each')?['OriginalTweet']?['UserDetails']?['FullName']}",
+                          "Id": " @{items('For_each')?['OriginalTweet']?['UserDetails']?['Id']}",
+                          "Location": "@{items('For_each')?['OriginalTweet']?['UserDetails']?['Location']}",
+                          "UserName": "@{items('For_each')?['OriginalTweet']?['UserDetails']?['UserName']}"
+                        }
+                      }
+                    },
+                    "Set_variable": {
+                      "runAfter": {
+                        "Create_JSON_Using_Original_Tweet": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "TweetJSON",
+                        "value": "@{outputs('Create_JSON_Using_Original_Tweet')}"
+                      }
+                    }
+                  },
+                  "runAfter": {},
+                  "else": {
+                    "actions": {
+                      "Create_JSON_Using_Tweet": {
+                        "runAfter": {},
+                        "type": "Compose",
+                        "inputs": {
+                          "CreatedAt": "@{items('For_each')?['CreatedAtIso']}",
+                          "RetweetCount": " @{items('For_each')['RetweetCount']}",
+                          "TweetId": "@{items('For_each')?['TweetId']}",
+                          "TweetLanguageCode": "@{items('For_each')?['TweetLanguageCode']}",
+                          "TweetText": "@{items('For_each')['TweetText']}",
+                          "TweetedBy": "@{items('For_each')['TweetedBy']}",
+                          "UserDetails": {
+                            "FullName": "@{items('For_each')?['UserDetails']?['FullName']}",
+                            "Id": " @{items('For_each')?['UserDetails']?['Id']}",
+                            "Location": "@{items('For_each')?['UserDetails']?['Location']}",
+                            "UserName": "@{items('For_each')?['UserDetails']?['UserName']}"
+                          }
+                        }
+                      },
+                      "Set_variable_2": {
+                        "runAfter": {
+                          "Create_JSON_Using_Tweet": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "TweetJSON",
+                          "value": "@{outputs('Create_JSON_Using_Tweet')}"
+                        }
+                      }
+                    }
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "not": {
+                          "equals": [
+                            "@items('For_each')?['OriginalTweet']?['TweetId']",
+                            ""
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "type": "If"
+                },
+                "Increment_variable": {
+                  "runAfter": {
+                    "Create_JSON_Object": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "IncrementVariable",
+                  "inputs": {
+                    "name": "TweetCount",
+                    "value": 1
+                  }
+                },
+                "Update_unique_tweet_if_a_new_row_was_created": {
+                  "actions": {
+                    "Increment_variable_2": {
+                      "runAfter": {},
+                      "type": "IncrementVariable",
+                      "inputs": {
+                        "name": "UniqueTweetCount",
+                        "value": 1
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "Create_a_Tweet_Row_if_the_tweet_has_not_already_been_stored": [
+                      "Succeeded"
+                    ]
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "equals": [
+                          "@body('Create_a_Tweet_Row_if_the_tweet_has_not_already_been_stored')?['returncode']",
+                          1
+                        ]
+                      }
+                    ]
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {
+                "Search_tweets": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Foreach"
+            },
+            "Get_latest_twitter_id": {
+              "runAfter": {
+                "Create_a_new_Run_Record": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[GetLatestTwitterID]'))}"
+              }
+            },
+            "Search_tweets": {
+              "runAfter": {
+                "Update_the_Last_TweetID": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['twitter']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/searchtweets",
+                "queries": {
+                  "maxResults": 99,
+                  "searchQuery": "@parameters('twitter-search-term')",
+                  "sinceId": "@{variables('LastTweetID')}"
+                }
+              }
+            },
+            "Sets_the_last_TweetID_for_searching_later": {
+              "runAfter": {
+                "Create_a_variable_to_store_a_tweet_as_JSON": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "LastTweetID",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "Update_Run_Record_on_Error": {
+              "runAfter": {
+                "Create_JSON_from_Result": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "DateFinished": "@{utcNow()}",
+                  "Errors": "@{outputs('Create_JSON_from_Result')}",
+                  "IsSuccessful": false,
+                  "LastTwitterID": "@variables('LastTweetID')",
+                  "NumberofTweets": "@variables('TweetCount')",
+                  "NumberofUniqueTweets": "@variables('UniqueTweetCount')"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Runs]'))}/items/@{encodeURIComponent(encodeURIComponent(variables('RunID')))}"
+              }
+            },
+            "Update_the_Last_TweetID": {
+              "runAfter": {
+                "Get_latest_twitter_id": [
+                  "Succeeded"
+                ]
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "LastTweetID",
+                "value": "@body('Get_latest_twitter_id')?['outputparameters']?['LastTwitterID']"
+              }
+            },
+            "Update_the_Run_Record": {
+              "runAfter": {
+                "Create_JSON_from_Result": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "DateFinished": "@{utcNow()}",
+                  "Errors": "@{outputs('Create_JSON_from_Result')}",
+                  "IsSuccessful": true,
+                  "LastTwitterID": "@variables('LastTweetID')",
+                  "NumberofTweets": "@variables('TweetCount')",
+                  "NumberofUniqueTweets": "@variables('UniqueTweetCount')"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Runs]'))}/items/@{encodeURIComponent(encodeURIComponent(variables('RunID')))}"
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "sql": {
+                "connectionId": "[parameters('connections_sql_externalid')]",
+                "connectionName": "sql",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/sql')]"
+              },
+              "twitter": {
+                "connectionId": "[parameters('connections_twitter_externalid')]",
+                "connectionName": "sql",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/twitter')]"
+              }
+            }
+          }
+        }
+      }
+    }
+    
+  ]
+}

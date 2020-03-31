@@ -1,0 +1,170 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workflows_sentiment_logic_app_name": {
+      "defaultValue": "sentiment_logic_app",
+      "type": "String"
+    },
+    "connections_sql_externalid": {
+      "defaultValue": "needs to be replaced",
+      "type": "String"
+    },
+    "connections_textanalytics_externalid": {
+      "defaultValue": "",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2017-07-01",
+      "name": "sentiment_logic_app",
+      "location": "northeurope",
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "Recurrence": {
+              "recurrence": {
+                "frequency": "Minute",
+                "interval": 5
+              },
+              "type": "Recurrence"
+            }
+          },
+          "actions": {
+            "For_each": {
+              "foreach": "@body('Get_rows_(V2)')?['value']",
+              "actions": {
+                "Condition": {
+                  "actions": {
+                    "Update_row_(V2)": {
+                      "runAfter": {},
+                      "type": "ApiConnection",
+                      "inputs": {
+                        "body": {
+                          "IsSentimentCalculated": true,
+                          "Sentiment": "@body('Detect_Sentiment')?['score']"
+                        },
+                        "host": {
+                          "connection": {
+                            "name": "@parameters('$connections')['sql']['connectionId']"
+                          }
+                        },
+                        "method": "patch",
+                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Tweets]'))}/items/@{encodeURIComponent(encodeURIComponent(items('For_each')?['ID']))}"
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "Detect_Sentiment": [
+                      "Succeeded"
+                    ]
+                  },
+                  "else": {
+                    "actions": {
+                      "Update_row_(V2)_2": {
+                        "runAfter": {},
+                        "type": "ApiConnection",
+                        "inputs": {
+                          "body": {
+                            "InvalidSentiment": true,
+                            "InvalidSentimentReason": "sentiment came back null, probabaly invalid language, @{body('Detect_Sentiment')?['id']}",
+                            "IsSentimentCalculated": true
+                          },
+                          "host": {
+                            "connection": {
+                              "name": "@parameters('$connections')['sql']['connectionId']"
+                            }
+                          },
+                          "method": "patch",
+                          "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Tweets]'))}/items/@{encodeURIComponent(encodeURIComponent(items('For_each')?['ID']))}"
+                        }
+                      }
+                    }
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "not": {
+                          "equals": [
+                            "@body('Detect_Sentiment')?['score']",
+                            "@null"
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "type": "If"
+                },
+                "Detect_Sentiment": {
+                  "runAfter": {},
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "body": {
+                      "language": "@items('For_each')?['TweetLanguageCode']",
+                      "text": "@items('For_each')?['Body']"
+                    },
+                    "host": {
+                      "connection": {
+                        "name": "@parameters('$connections')['cognitiveservicestextanalytics']['connectionId']"
+                      }
+                    },
+                    "method": "post",
+                    "path": "/text/analytics/v2.1/sentiment"
+                  }
+                }
+              },
+              "runAfter": {
+                "Get_rows_(V2)": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Foreach"
+            },
+            "Get_rows_(V2)": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[viewTweetsWithNoSentiment]'))}/items"
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "cognitiveservicestextanalytics": {
+                "connectionId": "[parameters('connections_textanalytics_externalid')]",
+                "connectionName": "textanalytics",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/cognitiveservicestextanalytics')]",
+              },
+              "sql": {
+                "connectionId": "[parameters('connections_sql_externalid')]",
+                "connectionName": "sql",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/sql')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
