@@ -26,7 +26,7 @@ $text_analytics_name = $VariablesJsonObject.text_analytics_name
 ## for error tracking
 $ErrorActionPreference = "SilentlyContinue" # change to SilentlyContinue once completed
 
-
+ 
 ## dynamic variables
 
 $connections_sql_name = "sql"

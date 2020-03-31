@@ -1,7 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ARM"
+    "\\ARM",
+    "\\ARM\\CreateLogicAppConnections",
+    "\\ARM\\CreateLogicApps",
+    "\\ARM\\CreateSQLDatabase",
+    "\\ARM\\CreateTextAnalytics",
+    "\\Data",
+    "\\Data\\AzureSQLDatabase",
+    "\\Reports"
   ],
+  "SelectedNode": "\\ARM\\CreateLogicApps\\template copy.json",
   "PreviewInSolutionExplorer": false
 }
