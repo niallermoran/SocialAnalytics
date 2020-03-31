@@ -1,5 +1,12 @@
 # SocialAnalytics
-A social analytics tool based on Azure logic apps, Azure sql database and PowerBI
+The Social Analytics tool is designed to demonstrate and deliver a tool that can take feeds from Twitter (and potentially other social networks) and use machine learning to extract sentiment and key topics from the data.
+The tool also includes a PowerBI desktop report that you can then deploy to your PowerBI cloud space for distribution within your company.
+
+
+![alt text](Assets/dashboard1.png "Social analytics dashboard")
+
+
+Below are the steps to follow. 
 
 ## Steps to Setup
 
@@ -45,10 +52,7 @@ Now that everything is setup, our Logic Apps, should now work correctly, but the
 - Open the Bing locations logic app and click the 'Enable' button
 - Now click the 'Edit' button and then 'Run'
 - Stay in the editor and wait to see the run complete successfully
-- Return to the resource group created in previous steps.
-- Open the twitter logic app and click the 'Enable' button.
-- Now click the 'Edit' button and then 'Run' or 'Save' and then 'Run' if 'Run' is not immediately available.
-- Stay in the editor and wait to see the run complete successfully
+- Return to the resource group and repeat this procedure for all logic apps in the resource group.
 ### Test Everything
 - To test everything is working query the sql database by reviewing the results of each of the views: viewLocation, viewTweets and view Phrases
 - Within viewLocations you should start to see records with BingLocation populated. This won't be the case for all records as users can add whatever location they want in twitter.
