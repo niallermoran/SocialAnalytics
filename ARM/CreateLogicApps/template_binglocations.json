@@ -28,6 +28,10 @@
           "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
           "contentVersion": "1.0.0.0",
           "parameters": {
+            "api_key": {
+              "defaultValue": "[parameters('bing_api_key')]",
+              "type": "String"
+            },
             "$connections": {
               "defaultValue": {},
               "type": "Object"
@@ -72,7 +76,8 @@
                   "type": "Http",
                   "inputs": {
                     "method": "GET",
-                    "uri": "http://dev.virtualearth.net/REST/v1/Locations/@{replace(replace(trim(replace(replace(replace(replace(items('For_each_2')?['TweetLocation'],'/',' ' ), '.', ' '),'&',''),'''','')),':',''),'#','')}?o=json&key=[parameters('connections_sql_externalid')]&maxResults=1"
+                    "uri": null,
+                    "uri": "http://dev.virtualearth.net/REST/v1/Locations/@{replace(replace(trim(replace(replace(replace(replace(items('For_each_2')?['TweetLocation'],'/',' ' ), '.', ' '),'&',''),'''','')),':',''),'#','')}?o=json&key=@{parameters('api_key')}&maxResults=1"
                   }
                 }
               },

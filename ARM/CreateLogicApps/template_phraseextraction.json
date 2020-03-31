@@ -86,7 +86,7 @@
                                 },
                                 "host": {
                                   "connection": {
-                                    "name": "@parameters('$connections')['sql_1']['connectionId']"
+                                    "name": "@parameters('$connections')['sql']['connectionId']"
                                   }
                                 },
                                 "method": "post",
