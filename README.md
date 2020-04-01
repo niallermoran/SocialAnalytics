@@ -6,7 +6,31 @@ The tool also includes a PowerBI desktop report that you can then deploy to your
 ![alt text](Assets/dashboard1.png "Social analytics dashboard")
 
 
-Below are the steps to follow. 
+Below are the steps to follow to deploy the tool to your own Azure tenant.
+
+Notes:
+
+- The PowerShell script below references a file called SetupVariables.json which is not included in the repository. You will need to create this file locally with the following format and in the same directory as the PowerShell script:
+
+- The PowerShell script will create all resources required, including the resource group
+
+- It is important that you use a narrow seacrh term for 'twitter_search_term' as the twitter search api only returns 100 tweets at a time you will not get a good sample if the search term is not narrow. For example, this sentiment analysis tool was orginally developed to help organisations with social analytics during the COVID-19 crisis. On it's own this term is very broad, so instead use COVID-19 Countryname to look for tweets specific to a certain country or COVID-19 brandname to search for tweets specific to a certain brand name.
+
+
+#### SetupVariables.json Format to be Created Locally:
+
+
+`{`  
+    `"subname":"<name of the Azure subscription>",`  
+    `"location":"<data centre location for resources>",`  
+    `"resourcegroupname":"<name of the resource group to use/create>",`  
+    `"sqlservername":"<name of the Azure sql server do not include azure domain name>",`  
+    `"sqldbname":"<name of the sql database>",`  
+    `"bing_maps_key":"<a key for the bing maps search at https://www.bingmapsportal.com/>",`  
+    `"twitter_search_term":"<a search term. use a narrow seacrh term that suits your needs>",`  
+    `"text_analytics_domain":"<the globally unique domain name for the text analytics cognitive servcice in Azure, i.e. the name before cognitiveservices.azure.com>",`  
+    `"text_analytics_name":"<name of the text analytics cognitive service, doesn't need to be globally unique >"`  
+`}`  
 
 ## Steps to Setup
 
