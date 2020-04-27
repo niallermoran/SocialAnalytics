@@ -14,14 +14,6 @@
             "defaultValue": "dbname",
             "type": "String"
         },
-        "connections_sql_user": {
-            "defaultValue": "user",
-            "type": "String"
-        },
-        "connections_sql_password": {
-            "defaultValue": "password",
-            "type": "String"
-        },
         "connections_twitter_name": {
             "defaultValue": "TWITTER",
             "type": "String"
@@ -29,15 +21,7 @@
         "connections_cognitiveservicestextanalytics_name": {
             "defaultValue": "",
             "type": "String"
-        },
-        "connections_cognitiveservicestextanalytics_key": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "connections_cognitiveservicestextanalytics_url": {
-            "defaultValue": "",
-            "type": "String"
-        }
+        } 
     },
     "variables": {},
     "resources": [
@@ -49,7 +33,7 @@
             "properties": {
                 "displayName": "[parameters('connections_cognitiveservicestextanalytics_name')]",
                 "parameterValues": {
-                    "apiKey": "[parameters('connections_cognitiveservicestextanalytics_key')]"
+                    "apiKey": ""
                 },
                 "api": {
                     "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/cognitiveservicestextanalytics')]"
@@ -67,8 +51,8 @@
                     "server": "[parameters('connections_sql_server')]",
                     "database": "[parameters('connections_sql_dbname')]",
                     "authType": "SQL",
-                    "username": "[parameters('connections_sql_user')]",
-                    "password": "[parameters('connections_sql_password')]"
+                    "username": "user",
+                    "password": ""
                   },
                 "customParameterValues": {},
                 "api": {

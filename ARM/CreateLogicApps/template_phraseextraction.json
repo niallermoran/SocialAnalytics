@@ -13,6 +13,10 @@
     "connections_textanalytics_externalid": {
       "defaultValue": "",
       "type": "String"
+    },
+    "connections_textanalytics_name": {
+      "defaultValue": "textanalytics",
+      "type": "String"
     }
   },
   "variables": {},
@@ -186,7 +190,7 @@
             "value": {
               "cognitiveservicestextanalytics": {
                 "connectionId": "[parameters('connections_textanalytics_externalid')]",
-                "connectionName": "textanalytics",
+                "connectionName": "[parameters('connections_textanalytics_name')]",
                 "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/northeurope/managedApis/cognitiveservicestextanalytics')]"
               },
               "sql": {

@@ -446,5 +446,3 @@ INSERT [dbo].[LookupBadPhrases] ([Phrase]) VALUES (N'day')
 GO
 INSERT [dbo].[LookupBadPhrases] ([Phrase]) VALUES (N'days')
 GO
-INSERT [dbo].[LookupBadPhrases] ([Phrase]) VALUES (N'coronavirus')
-GO

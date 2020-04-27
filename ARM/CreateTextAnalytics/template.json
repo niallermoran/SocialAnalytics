@@ -5,11 +5,15 @@
         "name": {
             "defaultValue": "Social-Text-Analytics",
             "type": "String"
-        },        
-            "text_analytics_domain_name": {
-                "defaultValue": "Social-Text-Analytics",
-                "type": "String"
-            }
+        },
+        "text_analytics_domain_name": {
+            "defaultValue": "Social-Text-Analytics",
+            "type": "String"
+        },
+        "text_analytics_tier": {
+            "defaultValue": "F0",
+            "type": "String"
+        }
     },
     "variables": {},
     "resources": [
@@ -19,7 +23,7 @@
             "name": "[parameters('name')]",
             "location": "northeurope",
             "sku": {
-                "name": "F0"
+                "name": "[parameters('text_analytics_tier')]"
             },
             "kind": "TextAnalytics",
             "properties": {

@@ -21,6 +21,7 @@ $bing_maps_key = $VariablesJsonObject.bing_maps_key
 $twitter_search_term = $VariablesJsonObject.twitter_search_term
 $text_analytics_domain = $VariablesJsonObject.text_analytics_domain  ## this needs to be globally unique or you will get an error
 $text_analytics_name = $VariablesJsonObject.text_analytics_name
+$text_analytics_tier = $VariablesJsonObject.text_analytics_tier
 
 
 ## for error tracking
@@ -90,7 +91,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the SQL resources !" 
+        echo "There was a problem creating the SQL resources !"  + $failed
         Cleanup
     }
     else
@@ -106,6 +107,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     $paramObject = @{
         'name' = $text_analytics_name
         'text_analytics_domain_name' = $text_analytics_domain
+        'text_analytics_tier' = $text_analytics_tier
     }
     
     ## create the service
@@ -115,7 +117,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     
     if( $failed )
     {
-        echo "There was a problem creating the text analytics service !" 
+        echo "There was a problem creating the text analytics service !"  + $failed
         Cleanup
     }
     else
@@ -132,7 +134,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     $paramObjectConnections = @{
         'connections_sql_name' = $connections_sql_name
         'connections_twitter_name'  = $connections_twitter_name
-        'connections_cognitiveservicestextanalytics_name' = $text_analytics_name
+        'connections_cognitiveservicestextanalytics_name' = $connections_cognitiveservicestextanalytics_name
         'connections_sql_server' = $sqlservername + '.database.windows.net'
         'connections_sql_dbname' = $sqldbname
     }
@@ -143,7 +145,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the connections!" 
+        echo "There was a problem creating the connections!"  + $failed
         Cleanup
     }
     else
@@ -171,7 +173,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the logic app!" 
+        echo "There was a problem creating the logic app!"  + $failed
         Cleanup
     }
     else
@@ -190,6 +192,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     $paramObjectLogicApps = @{
         'workflows_extract_phrase_logicapp_name' = 'phrase_extraction_logic_app'
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
+        'connections_textanalytics_name' = $connections_cognitiveservicestextanalytics_name
         'connections_textanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
     }
 
@@ -199,7 +202,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the phrase extraction logic apps!" 
+        echo "There was a problem creating the phrase extraction logic apps!"  + $failed
         Cleanup
     }
     else
@@ -228,7 +231,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the sentiment logic app!" 
+        echo "There was a problem creating the sentiment logic app!"  + $failed
         Cleanup
     }
     else
@@ -258,7 +261,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
 
     if( $failed )
     {
-        echo "There was a problem creating the twitter seach logic app!" 
+        echo "There was a problem creating the twitter seach logic app!"  + $failed
         Cleanup
     }
     else
