@@ -248,7 +248,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'workflows_twitter_logic_app_name' = 'twitter_seach_logicapp'
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
         'connections_twitter_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_twitter_name
-        'twitter_search_term' = "covid-19 ireland"
+        'twitter_search_term' = $twitter_search_term
     }
 
     ## create the logic apps
