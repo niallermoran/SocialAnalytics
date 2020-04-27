@@ -15,6 +15,7 @@ Notes:
         `{`  
             `"subname":"<name of the Azure subscription>",`  
             `"location":"<data centre location for resources>",`  
+            `"sqllocation":"<data centre location for sql resources, should be the same as location above but this is to allow for restrictions based on user subscription>",`  
             `"resourcegroupname":"<name of the resource group to use/create>",`  
             `"sqlservername":"<name of the Azure sql server do not include azure domain name>",`  
             `"sqldbname":"<name of the sql database>",`  

@@ -14,6 +14,7 @@ $VariablesJsonObject = Get-Content $VariablesFile | ConvertFrom-Json
 ## variables to be updated
 $subname = $VariablesJsonObject.subname
 $location = $VariablesJsonObject.location
+$sqllocation = $VariablesJsonObject.sqllocation
 $resourcegroupname = $VariablesJsonObject.resourcegroupname
 $sqlservername = $VariablesJsonObject.sqlservername ## It can only be made up of lowercase letters 'a'-'z', the numbers 0-9 and the hyphen. The hyphen may not lead or trail in the name.
 $sqldbname = $VariablesJsonObject.sqldbname
@@ -82,7 +83,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
     $paramObject = @{
         'dbName' = $sqldbname
         'serverName' = $sqlservername
-        'location' = "eastus"
+        'location' = $sqllocation
     }
 
     echo "Creating the sql server"
