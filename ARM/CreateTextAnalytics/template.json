@@ -13,6 +13,10 @@
         "text_analytics_tier": {
             "defaultValue": "F0",
             "type": "String"
+        },
+        "location": {
+            "defaultValue": "eastus",
+            "type": "String"
         }
     },
     "variables": {},
@@ -21,7 +25,7 @@
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2017-04-18",
             "name": "[parameters('name')]",
-            "location": "northeurope",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('text_analytics_tier')]"
             },

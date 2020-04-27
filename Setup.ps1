@@ -109,6 +109,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'name' = $text_analytics_name
         'text_analytics_domain_name' = $text_analytics_domain
         'text_analytics_tier' = $text_analytics_tier
+        'location' = $location
     }
     
     ## create the service
@@ -138,6 +139,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'connections_cognitiveservicestextanalytics_name' = $connections_cognitiveservicestextanalytics_name
         'connections_sql_server' = $sqlservername + '.database.windows.net'
         'connections_sql_dbname' = $sqldbname
+        'location' = $location
     }
 
     ## create the service
@@ -166,6 +168,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'workflows_bing_locations_logic_app_name' = 'bing_locations_logic_app'
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
         'bing_api_key' = $bing_maps_key
+        'location' = $location
     }
 
     ## create the logic apps
@@ -195,6 +198,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
         'connections_textanalytics_name' = $connections_cognitiveservicestextanalytics_name
         'connections_textanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
+        'location' = $location
     }
 
     ## create the logic apps
@@ -223,6 +227,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'workflows_sentiment_logic_app_name' = 'sentiment_logic_app'
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
         'connections_textanalytics_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_cognitiveservicestextanalytics_name
+        'location' = $location
     }
 
 
@@ -253,6 +258,7 @@ $connections_cognitiveservicestextanalytics_name = "textanalytics"
         'connections_sql_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_sql_name
         'connections_twitter_externalid'  = "/subscriptions/" + $subid + "/resourceGroups/" + $resourcegroupname +  "/providers/Microsoft.Web/connections/" + $connections_twitter_name
         'twitter_search_term' = $twitter_search_term
+        'location' = $location
     }
 
     ## create the logic apps

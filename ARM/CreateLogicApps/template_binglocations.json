@@ -13,6 +13,10 @@
     "connections_sql_externalid": {
       "defaultValue": "needs to be replaced",
       "type": "String"
+    },
+    "location": {
+        "defaultValue": "eastus",
+        "type": "String"
     }
   },
   "variables": {},
@@ -21,7 +25,7 @@
       "type": "Microsoft.Logic/workflows",
       "apiVersion": "2017-07-01",
       "name": "[parameters('workflows_bing_locations_logic_app_name')]",
-      "location": "northeurope",
+      "location": "[parameters('location')]",
       "properties": {
         "state": "Enabled",
         "definition": {

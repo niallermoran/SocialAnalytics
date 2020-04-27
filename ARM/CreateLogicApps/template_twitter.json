@@ -17,6 +17,10 @@
     "twitter_search_term": {
       "defaultValue": "Ireland",
       "type": "String"
+    },
+    "location": {
+        "defaultValue": "eastus",
+        "type": "String"
     }
   },
   "variables": {},
@@ -25,7 +29,7 @@
       "type": "Microsoft.Logic/workflows",
       "apiVersion": "2017-07-01",
       "name": "twitter_logic_app",
-      "location": "northeurope",
+      "location": "[parameters('location')]",
       "properties": {
         "state": "Enabled",
         "definition": {
