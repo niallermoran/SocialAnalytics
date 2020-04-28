@@ -87,7 +87,7 @@ Now that everything is setup, our Logic Apps, should now work correctly, but the
 - Click on the 'Edit Queries' button to enter the power query editor.
 - Hit the 'Data source settings' button, then click change source and enter the full sql database server name.
 - Make sure your client IP address has been added to the firewall settings of the sql database using the Azure portal
-- Then click 'Edit Permissions' on the data source settings dialog and update the sql connection details.
+- Then click 'Edit Permissions' on the data source settings dialog and update the sql connection details. Make sure to use Databse as the type of credential and the user name and password defined when running the PowerShell script earlier
 - Click 'OK' and 'Close' and the 'Refresh Preview'
 - Assuming this all works click 'Close and Apply'
 - On the main PowerBI dialog click Refresh
