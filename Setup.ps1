@@ -1,5 +1,5 @@
 ﻿## ************************************************************************************************
-## This PowerShell script s part of a social listening tool developed by Niall Moran, Micrososft
+## This PowerShell script s part of a social listening tool developed by Niall Moran, Microsoft
 ## See https://github.com/niallermoran/socialanalytics for more information
 ## This Powershell script should be run to setup the new Azure environment
 ## ************************************************************************************************

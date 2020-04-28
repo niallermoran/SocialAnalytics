@@ -1,6 +1,15 @@
 # SocialAnalytics
-The Social Analytics tool is designed to demonstrate and deliver a tool that can take feeds from Twitter (and potentially other social networks) and use machine learning to extract sentiment and key topics from the data.
+The Social Analytics tool is designed to demonstrate and deliver a tool that can take feeds from Twitter (and potentially other social networks) and use machine learning to extract sentiment and key topics from the data. The tool also uses a bing maps api to get accurate country data from Twitter locations for geographical analysis.
+
 The tool also includes a PowerBI desktop report that you can then deploy to your PowerBI cloud space for distribution within your company.
+
+Components Used
+
+- Azure Logic Apps for designing and managing the workflows
+- Azure SQL database for storing of data for reporting
+- Azure cognitive services to extract topics and sentiment from tweets
+- Bing maps API for extracting accurate location data from Tweets
+- PowerBI to analyse data in graphical form
 
 
 ![alt text](Assets/dashboard1.png "Social analytics dashboard")
